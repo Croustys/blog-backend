@@ -47,7 +47,7 @@ func RegisterUser(email string, password string) bool {
 
 	_, err := coll.InsertOne(context.TODO(), doc)
 
-	return err != nil
+	return err == nil
 }
 func LoginUser(email string, password string) bool {
 	client := connect()
@@ -70,5 +70,5 @@ func LoginUser(email string, password string) bool {
 	pwHash := dbUser.Password
 	err = bcrypt.CompareHashAndPassword([]byte(pwHash), []byte(password))
 
-	return err != nil
+	return err == nil
 }
