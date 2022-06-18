@@ -60,7 +60,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashed, _ := bcrypt.GenerateFromPassword([]byte(u.Password), 16)
+	hashed, _ := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
 	u.Password = string(hashed)
 
 	auth.GenerateToken(w)

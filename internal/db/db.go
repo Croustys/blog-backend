@@ -51,6 +51,7 @@ func LoginUser(email string, password string) bool {
 			panic(err)
 		}
 	}()
+
 	var dbUser UserS
 	coll := client.Database("blog").Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
