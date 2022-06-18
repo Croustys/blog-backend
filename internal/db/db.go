@@ -27,7 +27,12 @@ func connect() *mongo.Client {
 	}
 	return client
 }
-func Insert(email string, password string) (bool, *mongo.InsertOneResult) {
+func generateHash(pw string) string {
+	hash, _ := bcrypt.GenerateFromPassword([]byte(pw), 10)
+	return string(hash)
+}
+
+func RegisterUser(email string, password string) bool {
 	client := connect()
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {
@@ -35,14 +40,14 @@ func Insert(email string, password string) (bool, *mongo.InsertOneResult) {
 		}
 	}()
 
+	pwHash := generateHash(password)
+
 	coll := client.Database("blog").Collection("users")
-	doc := bson.D{primitive.E{Key: "email", Value: email}, primitive.E{Key: "password", Value: password}}
-	result, err := coll.InsertOne(context.TODO(), doc)
-	if err != nil {
-		log.Println(err)
-		return false, nil
-	}
-	return true, result
+	doc := bson.D{primitive.E{Key: "email", Value: email}, primitive.E{Key: "password", Value: pwHash}}
+
+	_, err := coll.InsertOne(context.TODO(), doc)
+
+	return err != nil
 }
 func LoginUser(email string, password string) bool {
 	client := connect()

@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserS struct {
@@ -25,25 +23,26 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	failedLogin := db.LoginUser(u.Email, u.Password)
-	if failedLogin {
-		log.Println("Bad credentials")
+	isLoginSuccessful := db.LoginUser(u.Email, u.Password)
+	if !isLoginSuccessful {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
 	if auth.AuthUser(r) {
-		json, err := json.Marshal("Login successful")
+		json, err := json.Marshal(map[string]string{"StatusMessage": "Login Successful"})
 		if err != nil {
 			log.Println(err)
 		}
+
 		w.WriteHeader(http.StatusOK)
 		w.Write(json)
+		return
 	}
 
 	auth.GenerateToken(w)
 
-	json, err := json.Marshal("Login successful")
+	json, err := json.Marshal(map[string]string{"StatusMessage": "Login Successful"})
 	if err != nil {
 		log.Println(err)
 	}
@@ -52,6 +51,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	var u UserS
 	err := json.NewDecoder(r.Body).Decode(&u)
 
@@ -60,27 +61,24 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashed, _ := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
-	u.Password = string(hashed)
-
-	auth.GenerateToken(w)
-	success, result := db.Insert(u.Email, u.Password)
-
-	w.Header().Set("Content-Type", "application/json")
+	success := db.RegisterUser(u.Email, u.Password)
 
 	if !success {
 		w.WriteHeader(http.StatusBadRequest)
-		json, err := json.Marshal("Register Unsuccessful")
+		json, err := json.Marshal(map[string]string{"StatusMessage": "Register Unsuccessful"})
+
 		if err != nil {
 			log.Println(err)
 		}
 		w.Write(json)
+		return
 	}
 
-	json, err := json.Marshal(result)
+	json, err := json.Marshal(map[string]string{"StatusMessage": "Register Successful"})
 	if err != nil {
 		log.Println(err)
 	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(json)
 }
