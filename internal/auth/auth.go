@@ -6,13 +6,12 @@ import (
 	"os"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/joho/godotenv"
 )
 
 var secret_token string
 
 func AuthUser(r *http.Request) bool {
-	tok, err := r.Cookie("Authorization Token")
+	tok, err := r.Cookie("AuthToken")
 	if err != nil {
 		return false
 	}
@@ -45,14 +44,9 @@ func GenerateToken(w http.ResponseWriter) {
 	if err != nil {
 		log.Println(err)
 	}
-	http.SetCookie(w, &http.Cookie{Name: "Authorization Token", Value: tokenString, MaxAge: 86400, Secure: true, HttpOnly: true})
+	http.SetCookie(w, &http.Cookie{Name: "AuthToken", Value: tokenString, MaxAge: 86400, Secure: true, HttpOnly: true})
 }
 
 func setSecretToken() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println(err.Error())
-	}
-
 	secret_token = os.Getenv("JWT_TOKEN")
 }
