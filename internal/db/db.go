@@ -43,9 +43,19 @@ func RegisterUser(email string, password string) bool {
 	pwHash := generateHash(password)
 
 	coll := client.Database("blog").Collection("users")
+	_, err := coll.Indexes().CreateOne(context.Background(), mongo.IndexModel{
+		Keys: bson.M{
+			"email": 1,
+		},
+		Options: options.Index().SetUnique(true),
+	})
+	if err != nil {
+		log.Println(err)
+	}
+
 	doc := bson.D{primitive.E{Key: "email", Value: email}, primitive.E{Key: "password", Value: pwHash}}
 
-	_, err := coll.InsertOne(context.TODO(), doc)
+	_, err = coll.InsertOne(context.TODO(), doc)
 
 	return err == nil
 }
