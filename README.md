@@ -1,0 +1,1 @@
+# Place .env file in root folder
