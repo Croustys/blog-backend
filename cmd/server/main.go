@@ -17,6 +17,7 @@ func main() {
 
 	r.HandleFunc("/login", controller.Login)
 	r.HandleFunc("/register", controller.Register)
+	r.HandleFunc("/create", controller.CreatePost)
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe("localhost:8080", r))

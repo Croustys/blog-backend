@@ -12,6 +12,10 @@ type UserS struct {
 	Email    string
 	Password string
 }
+type PostS struct {
+	Title   string
+	Content string
+}
 
 func unAuthHttpResponse(w *http.ResponseWriter, msg string) {
 	json, err := json.Marshal(map[string]string{"StatusMessage": msg})
@@ -50,7 +54,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth.GenerateToken(w)
+	auth.GenerateToken(w, u.Email)
 
 	json, err := json.Marshal(map[string]string{"StatusMessage": "Login Successful"})
 	if err != nil {
@@ -93,5 +97,29 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	w.Write(json)
 }
 func CreatePost(w http.ResponseWriter, r *http.Request) {
-	//create post
+	w.Header().Set("Content-Type", "application/json")
+
+	var p PostS
+	err := json.NewDecoder(r.Body).Decode(&p)
+	if err != nil {
+		log.Println(err)
+	}
+
+	authorEmail := auth.GetPayload(r)
+	if !db.SavePost(authorEmail, p.Title, p.Content) {
+		w.WriteHeader(http.StatusInternalServerError)
+		json, err := json.Marshal(map[string]string{"StatusMessage": "Unsuccessful creation of a new Blog"})
+		if err != nil {
+			log.Println(err)
+		}
+		w.Write(json)
+		return
+	}
+
+	json, err := json.Marshal(map[string]string{"StatusMessage": "Successful creation of a new Blog"})
+	if err != nil {
+		log.Println(err)
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(json)
 }
