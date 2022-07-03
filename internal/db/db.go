@@ -17,6 +17,9 @@ type UserS struct {
 	Email    string
 	Password string
 }
+type userId struct {
+	Id primitive.ObjectID `bson:"_id" json:"id,omitempty"`
+}
 
 func connect() *mongo.Client {
 	uri := os.Getenv("MONGO_URI")
@@ -80,5 +83,22 @@ func LoginUser(email string, password string) bool {
 	pwHash := dbUser.Password
 	err = bcrypt.CompareHashAndPassword([]byte(pwHash), []byte(password))
 
+	return err == nil
+}
+
+func SavePost(authorEmail string, title string, content string) bool {
+	client := connect()
+
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
+
+	coll := client.Database("blog").Collection("posts")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := coll.InsertOne(ctx, bson.D{primitive.E{Key: "author", Value: authorEmail}, primitive.E{Key: "title", Value: title}, primitive.E{Key: "content", Value: content}})
 	return err == nil
 }
