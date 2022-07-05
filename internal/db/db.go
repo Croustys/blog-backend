@@ -20,6 +20,10 @@ type UserS struct {
 type userId struct {
 	Id primitive.ObjectID `bson:"_id" json:"id,omitempty"`
 }
+type PostS struct {
+	Title   string
+	Content string
+}
 
 func connect() *mongo.Client {
 	uri := os.Getenv("MONGO_URI")
@@ -101,4 +105,24 @@ func SavePost(authorEmail string, title string, content string) bool {
 
 	_, err := coll.InsertOne(ctx, bson.D{primitive.E{Key: "author", Value: authorEmail}, primitive.E{Key: "title", Value: title}, primitive.E{Key: "content", Value: content}})
 	return err == nil
+}
+func GetPosts(offset int64, limit int64) []PostS {
+	client := connect()
+
+	opts := options.Find()
+	opts.SetSkip(offset)
+	opts.SetLimit(limit)
+
+	coll := client.Database("blog").Collection("posts")
+	cursor, err := coll.Find(context.TODO(), bson.D{}, opts)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var results []PostS
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		log.Println(err)
+	}
+
+	return results
 }

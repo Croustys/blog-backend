@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type UserS struct {
@@ -120,6 +123,36 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(json)
+}
+func GetPostsLazy(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	offset := mux.Vars(r)["offset"]
+	limit := mux.Vars(r)["limit"]
+	offsetInt, _ := strconv.ParseInt(offset, 10, 64)
+	limitInt, _ := strconv.ParseInt(limit, 10, 64)
+
+	data := db.GetPosts(offsetInt, limitInt)
+
+	json, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(json)
+}
+func GetPosts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	data := db.GetPosts(0, 0)
+	json, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(json)
 }
