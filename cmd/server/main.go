@@ -28,7 +28,7 @@ func main() {
 	})
 
 	http.Handle("/", r)
-	log.Fatal(http.ListenAndServe(port, r))
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
 
 func setSecretToken() {
