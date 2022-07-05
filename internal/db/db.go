@@ -28,7 +28,7 @@ func generateHash(pw string) string {
 	return string(hash)
 }
 
-func RegisterUser(email string, password string) bool {
+func RegisterUser(email string, password string, username string) bool {
 	client := connect()
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {
@@ -49,13 +49,13 @@ func RegisterUser(email string, password string) bool {
 		log.Println(err)
 	}
 
-	doc := bson.D{primitive.E{Key: "email", Value: email}, primitive.E{Key: "password", Value: pwHash}}
+	doc := bson.D{primitive.E{Key: "email", Value: email}, primitive.E{Key: "username", Value: username}, primitive.E{Key: "password", Value: pwHash}}
 
 	_, err = coll.InsertOne(context.TODO(), doc)
 
 	return err == nil
 }
-func LoginUser(email string, password string) bool {
+func LoginUser(email string, password string) (bool, string) {
 	client := connect()
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {
@@ -71,15 +71,15 @@ func LoginUser(email string, password string) bool {
 	err := coll.FindOne(ctx, bson.M{"email": email}).Decode(&dbUser)
 	if err != nil {
 		log.Println(err)
-		return false
+		return false, ""
 	}
 	pwHash := dbUser.Password
 	err = bcrypt.CompareHashAndPassword([]byte(pwHash), []byte(password))
 
-	return err == nil
+	return err == nil, dbUser.Username
 }
 
-func SavePost(authorEmail string, title string, content string) bool {
+func SavePost(authorEmail string, authorUsername string, title string, content string) bool {
 	client := connect()
 
 	defer func() {
@@ -92,10 +92,10 @@ func SavePost(authorEmail string, title string, content string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	_, err := coll.InsertOne(ctx, bson.D{primitive.E{Key: "author", Value: authorEmail}, primitive.E{Key: "title", Value: title}, primitive.E{Key: "content", Value: content}})
+	_, err := coll.InsertOne(ctx, bson.D{primitive.E{Key: "author", Value: authorEmail}, primitive.E{Key: "username", Value: authorUsername}, primitive.E{Key: "title", Value: title}, primitive.E{Key: "content", Value: content}})
 	return err == nil
 }
-func GetPosts(offset int64, limit int64) []types.PostS {
+func GetPosts(offset int64, limit int64) []types.PostResponse {
 	client := connect()
 
 	opts := options.Find()
@@ -108,10 +108,31 @@ func GetPosts(offset int64, limit int64) []types.PostS {
 		log.Println(err)
 	}
 
-	var results []types.PostS
+	var results []types.PostResponse
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		log.Println(err)
 	}
 
 	return results
+}
+func GetPost(id string) types.PostResponse {
+	client := connect()
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println(err)
+	}
+
+	filter := bson.D{primitive.E{Key: "_id", Value: objectId}}
+
+	coll := client.Database("blog").Collection("posts")
+	cursor := coll.FindOne(context.TODO(), filter)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var result types.PostResponse
+	cursor.Decode(&result)
+
+	return result
 }

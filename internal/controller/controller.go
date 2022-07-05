@@ -43,13 +43,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	isLoginSuccessful := db.LoginUser(u.Email, u.Password)
+	isLoginSuccessful, username := db.LoginUser(u.Email, u.Password)
 	if !isLoginSuccessful {
 		unAuthHttpResponse(&w, "Wrong Credentials")
 		return
 	}
 
-	auth.GenerateToken(w, u.Email)
+	auth.GenerateToken(w, u.Email, username)
 
 	json, err := json.Marshal(map[string]string{"StatusMessage": "Login Successful"})
 	if err != nil {
@@ -70,7 +70,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	success := db.RegisterUser(u.Email, u.Password)
+	success := db.RegisterUser(u.Email, u.Password, u.Username)
 
 	if !success {
 		w.WriteHeader(http.StatusBadRequest)
@@ -100,8 +100,8 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	authorEmail := auth.GetPayload(r)
-	if !db.SavePost(authorEmail, p.Title, p.Content) {
+	authorEmail, authorUsername := auth.GetPayload(r)
+	if !db.SavePost(authorEmail, authorUsername, p.Title, p.Content) {
 		w.WriteHeader(http.StatusInternalServerError)
 		json, err := json.Marshal(map[string]string{"StatusMessage": "Unsuccessful creation of a new Blog"})
 		if err != nil {
@@ -140,6 +140,20 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	data := db.GetPosts(0, 0)
+	json, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(json)
+}
+func GetPost(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	id := mux.Vars(r)["id"]
+	data := db.GetPost(id)
+
 	json, err := json.Marshal(data)
 	if err != nil {
 		log.Println(err)

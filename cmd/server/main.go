@@ -20,6 +20,7 @@ func main() {
 	r.HandleFunc("/create", controller.CreatePost)
 	r.Path("/posts").Queries("offset", "{offset:[0-9]+}", "limit", "{limit:[0-9]+}").HandlerFunc(controller.GetPostsLazy)
 	r.HandleFunc("/posts", controller.GetPosts)
+	r.HandleFunc("/post/{id}", controller.GetPost)
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe("localhost:8080", r))

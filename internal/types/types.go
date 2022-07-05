@@ -6,6 +6,13 @@ type UserS struct {
 	Password string `json:"password"`
 }
 type PostS struct {
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	AuthorEmail string `json:"authorEmail"`
+	Username    string `json:"username"`
+	Title       string `json:"title"`
+	Content     string `json:"content"`
+}
+type PostResponse struct {
+	Username string `json:"username"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
 }

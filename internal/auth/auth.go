@@ -10,7 +10,8 @@ import (
 )
 
 type Claims struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
@@ -42,10 +43,11 @@ func verifyToken(tokenString string) bool {
 	return token.Valid
 }
 
-func GenerateToken(w http.ResponseWriter, email string) {
+func GenerateToken(w http.ResponseWriter, email string, username string) {
 	expirationTime := time.Now().Add(72 * time.Hour)
 	claims := &Claims{
-		Email: email,
+		Email:    email,
+		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -60,7 +62,7 @@ func GenerateToken(w http.ResponseWriter, email string) {
 	http.SetCookie(w, &http.Cookie{Name: "AuthToken", Value: tokenString, MaxAge: 86400, Secure: false, HttpOnly: true, Path: "/"})
 }
 
-func GetPayload(r *http.Request) string {
+func GetPayload(r *http.Request) (string, string) {
 	tok, err := r.Cookie("AuthToken")
 	if err != nil {
 		log.Println(err)
@@ -79,7 +81,7 @@ func GetPayload(r *http.Request) string {
 		log.Println(err)
 	}
 
-	return claims.Email
+	return claims.Email, claims.Username
 }
 
 func setSecretToken() {
