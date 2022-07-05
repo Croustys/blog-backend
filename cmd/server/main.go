@@ -1,11 +1,12 @@
 package main
 
 import (
-	"blog-backend/internal/controller"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/Croustys/blog-backend/internal/controller"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -23,9 +24,10 @@ func main() {
 	r.Path("/posts").Queries("offset", "{offset:[0-9]+}", "limit", "{limit:[0-9]+}").HandlerFunc(controller.GetPostsLazy)
 	r.HandleFunc("/posts", controller.GetPosts)
 	r.HandleFunc("/post/{id}", controller.GetPost)
+	r.HandleFunc("/ping", controller.Ping)
 
 	http.Handle("/", r)
-	log.Fatal(http.ListenAndServe(port, r))
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
 
 func setSecretToken() {

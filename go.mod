@@ -1,4 +1,4 @@
-module blog-backend
+module github.com/Croustys/blog-backend
 
 go 1.18
 

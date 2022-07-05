@@ -1,13 +1,14 @@
 package controller
 
 import (
-	"blog-backend/internal/auth"
-	"blog-backend/internal/db"
-	"blog-backend/internal/types"
 	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/Croustys/blog-backend/internal/auth"
+	"github.com/Croustys/blog-backend/internal/db"
+	"github.com/Croustys/blog-backend/internal/types"
 
 	"github.com/gorilla/mux"
 )
@@ -161,4 +162,8 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(json)
+}
+
+func Ping(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Pong"))
 }
