@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -13,6 +14,7 @@ import (
 func main() {
 	fmt.Println("Hello")
 	setSecretToken()
+	port := os.Getenv("PORT")
 	r := mux.NewRouter()
 
 	r.HandleFunc("/login", controller.Login)
@@ -23,7 +25,7 @@ func main() {
 	r.HandleFunc("/post/{id}", controller.GetPost)
 
 	http.Handle("/", r)
-	log.Fatal(http.ListenAndServe("localhost:8080", r))
+	log.Fatal(http.ListenAndServe(port, r))
 }
 
 func setSecretToken() {
