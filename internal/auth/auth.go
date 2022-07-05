@@ -59,7 +59,7 @@ func GenerateToken(w http.ResponseWriter, email string, username string) {
 	if err != nil {
 		log.Println(err)
 	}
-	http.SetCookie(w, &http.Cookie{Name: "AuthToken", Value: tokenString, MaxAge: 86400, Secure: false, HttpOnly: true, Path: "/"})
+	http.SetCookie(w, &http.Cookie{Name: "AuthToken", Value: tokenString, MaxAge: 86400, Secure: true, HttpOnly: true, Path: "/"})
 }
 
 func GetPayload(r *http.Request) (string, string) {
