@@ -3,6 +3,7 @@ package controller
 import (
 	"blog-backend/internal/auth"
 	"blog-backend/internal/db"
+	"blog-backend/internal/types"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -10,15 +11,6 @@ import (
 
 	"github.com/gorilla/mux"
 )
-
-type UserS struct {
-	Email    string
-	Password string
-}
-type PostS struct {
-	Title   string
-	Content string
-}
 
 func unAuthHttpResponse(w *http.ResponseWriter, msg string) {
 	json, err := json.Marshal(map[string]string{"StatusMessage": msg})
@@ -43,7 +35,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var u UserS
+	var u types.UserS
 	err := json.NewDecoder(r.Body).Decode(&u)
 
 	if err != nil {
@@ -70,7 +62,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func Register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var u UserS
+	var u types.UserS
 	err := json.NewDecoder(r.Body).Decode(&u)
 
 	if err != nil {
@@ -102,7 +94,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 func CreatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var p PostS
+	var p types.PostS
 	err := json.NewDecoder(r.Body).Decode(&p)
 	if err != nil {
 		log.Println(err)

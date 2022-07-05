@@ -1,6 +1,7 @@
 package db
 
 import (
+	"blog-backend/internal/types"
 	"context"
 	"log"
 	"os"
@@ -12,18 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type UserS struct {
-	Email    string
-	Password string
-}
-type userId struct {
-	Id primitive.ObjectID `bson:"_id" json:"id,omitempty"`
-}
-type PostS struct {
-	Title   string
-	Content string
-}
 
 func connect() *mongo.Client {
 	uri := os.Getenv("MONGO_URI")
@@ -74,7 +63,7 @@ func LoginUser(email string, password string) bool {
 		}
 	}()
 
-	var dbUser UserS
+	var dbUser types.UserS
 	coll := client.Database("blog").Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -106,7 +95,7 @@ func SavePost(authorEmail string, title string, content string) bool {
 	_, err := coll.InsertOne(ctx, bson.D{primitive.E{Key: "author", Value: authorEmail}, primitive.E{Key: "title", Value: title}, primitive.E{Key: "content", Value: content}})
 	return err == nil
 }
-func GetPosts(offset int64, limit int64) []PostS {
+func GetPosts(offset int64, limit int64) []types.PostS {
 	client := connect()
 
 	opts := options.Find()
@@ -119,7 +108,7 @@ func GetPosts(offset int64, limit int64) []PostS {
 		log.Println(err)
 	}
 
-	var results []PostS
+	var results []types.PostS
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		log.Println(err)
 	}
