@@ -1,11 +1,12 @@
 package db
 
 import (
-	"blog-backend/internal/types"
 	"context"
 	"log"
 	"os"
 	"time"
+
+	"github.com/Croustys/blog-backend/internal/types"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
