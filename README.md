@@ -15,7 +15,7 @@ For development purposes place `.env` file in `root` folder
 `GET`
 
 - `/user/{id}`
-- `/post/{id}?offset={1}&limit={1}` --optional parameters for lazy loading
+- `/posts?offset={1}&limit={1}` --optional parameters for lazy loading
 - `/posts` -- all posts
 - `/post/{id}` -- specific post
 
