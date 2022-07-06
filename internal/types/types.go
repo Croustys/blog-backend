@@ -12,6 +12,7 @@ type PostS struct {
 	Content     string `json:"content"`
 }
 type PostResponse struct {
+	Id       string `json:"id"`
 	Username string `json:"username"`
 	Title    string `json:"title"`
 	Content  string `json:"content"`
