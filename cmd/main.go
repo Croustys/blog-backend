@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Croustys/blog-backend/internal/controller"
+	"github.com/Croustys/blog-backend/pkg/middleware"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -19,6 +20,8 @@ func main() {
 	port := os.Getenv("PORT")
 	r := mux.NewRouter()
 
+	r.Use(middleware.AuthMiddleware)
+
 	r.HandleFunc("/login", controller.Login)
 	r.HandleFunc("/register", controller.Register)
 	r.HandleFunc("/create", controller.CreatePost)
@@ -28,8 +31,8 @@ func main() {
 	r.HandleFunc("/ping", controller.Ping)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	originsOk := handlers.AllowedOrigins([]string{"*"}) //@TODO: change to frontends host url
+	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"})
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(":"+port, handlers.CORS(headersOk, originsOk, methodsOk)(r)))
