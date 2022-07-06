@@ -66,7 +66,7 @@ func LoginUser(email string, password string) (bool, string) {
 
 	var dbUser types.UserS
 	coll := client.Database("blog").Collection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	err := coll.FindOne(ctx, bson.M{"email": email}).Decode(&dbUser)
@@ -90,7 +90,7 @@ func SavePost(authorEmail string, authorUsername string, title string, content s
 	}()
 
 	coll := client.Database("blog").Collection("posts")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	_, err := coll.InsertOne(ctx, bson.D{primitive.E{Key: "author", Value: authorEmail}, primitive.E{Key: "username", Value: authorUsername}, primitive.E{Key: "title", Value: title}, primitive.E{Key: "content", Value: content}})
