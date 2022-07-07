@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Croustys/blog-backend/internal/controller"
+	"github.com/Croustys/blog-backend/pkg/middleware"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -19,17 +20,19 @@ func main() {
 	port := os.Getenv("PORT")
 	r := mux.NewRouter()
 
-	r.HandleFunc("/login", controller.Login)
-	r.HandleFunc("/register", controller.Register)
-	r.HandleFunc("/create", controller.CreatePost)
-	r.Path("/posts").Queries("offset", "{offset:[0-9]+}", "limit", "{limit:[0-9]+}").HandlerFunc(controller.GetPostsLazy)
-	r.HandleFunc("/posts", controller.GetPosts)
-	r.HandleFunc("/post/{id}", controller.GetPost)
-	r.HandleFunc("/ping", controller.Ping)
+	r.Use(middleware.AuthMiddleware)
+
+	r.HandleFunc("/login", controller.Login).Methods("POST")
+	r.HandleFunc("/register", controller.Register).Methods("POST")
+	r.HandleFunc("/create", controller.CreatePost).Methods("POST")
+	r.Path("/posts").Queries("offset", "{offset:[0-9]+}", "limit", "{limit:[0-9]+}").HandlerFunc(controller.GetPostsLazy).Methods("GET")
+	r.HandleFunc("/posts", controller.GetPosts).Methods("GET")
+	r.HandleFunc("/post/{id}", controller.GetPost).Methods("GET")
+	r.HandleFunc("/ping", controller.Ping).Methods("GET")
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	originsOk := handlers.AllowedOrigins([]string{"*"}) //@TODO: change to frontends host url
+	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"})
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(":"+port, handlers.CORS(headersOk, originsOk, methodsOk)(r)))

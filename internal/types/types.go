@@ -1,5 +1,7 @@
 package types
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type UserS struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
@@ -12,8 +14,8 @@ type PostS struct {
 	Content     string `json:"content"`
 }
 type PostResponse struct {
-	Id       string `json:"id"`
-	Username string `json:"username"`
-	Title    string `json:"title"`
-	Content  string `json:"content"`
+	Id       primitive.ObjectID `bson:"_id" json:"id"`
+	Username string             `json:"username"`
+	Title    string             `json:"title"`
+	Content  string             `json:"content"`
 }
