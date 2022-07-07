@@ -22,13 +22,13 @@ func main() {
 
 	r.Use(middleware.AuthMiddleware)
 
-	r.HandleFunc("/login", controller.Login)
-	r.HandleFunc("/register", controller.Register)
-	r.HandleFunc("/create", controller.CreatePost)
-	r.Path("/posts").Queries("offset", "{offset:[0-9]+}", "limit", "{limit:[0-9]+}").HandlerFunc(controller.GetPostsLazy)
-	r.HandleFunc("/posts", controller.GetPosts)
-	r.HandleFunc("/post/{id}", controller.GetPost)
-	r.HandleFunc("/ping", controller.Ping)
+	r.HandleFunc("/login", controller.Login).Methods("POST")
+	r.HandleFunc("/register", controller.Register).Methods("POST")
+	r.HandleFunc("/create", controller.CreatePost).Methods("POST")
+	r.Path("/posts").Queries("offset", "{offset:[0-9]+}", "limit", "{limit:[0-9]+}").HandlerFunc(controller.GetPostsLazy).Methods("GET")
+	r.HandleFunc("/posts", controller.GetPosts).Methods("GET")
+	r.HandleFunc("/post/{id}", controller.GetPost).Methods("GET")
+	r.HandleFunc("/ping", controller.Ping).Methods("GET")
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
 	originsOk := handlers.AllowedOrigins([]string{"*"}) //@TODO: change to frontends host url
