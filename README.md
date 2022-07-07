@@ -10,7 +10,7 @@ For development purposes place `.env` file in `root` folder
 
 - `/login`
 - `/register`
-- `/create`
+- `/create` - post creation
 
 `GET`
 
@@ -24,3 +24,41 @@ For development purposes place `.env` file in `root` folder
 - [JWT](https://github.com/golang-jwt/jwt) - token based authentication
 - [Bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt) - password hashing
 - [MongoDB](https://www.mongodb.com/) - Document based Database
+
+## Usage
+
+- register
+
+```js
+fetch("api.domain.com/register", {
+  method: "POST",
+  headers: {
+    "Content-type": "application/json",
+  },
+  body: JSON.stringify({ username, email, password }),
+});
+```
+
+- login
+
+```js
+fetch("api.domain.com/login", {
+  method: "POST",
+  headers: {
+    "Content-type": "application/json",
+  },
+  body: JSON.stringify({ email, password }),
+});
+```
+
+- create post
+
+```js
+fetch("api.domain.com/create", {
+  method: "POST",
+  headers: {
+    "Content-type": "application/json",
+  },
+  body: JSON.stringify({ title, content }),
+});
+```
