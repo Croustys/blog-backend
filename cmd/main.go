@@ -30,9 +30,9 @@ func main() {
 	r.HandleFunc("/post/{id}", controller.GetPost).Methods("GET")
 	r.HandleFunc("/ping", controller.Ping).Methods("GET")
 
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
 	originsOk := handlers.AllowedOrigins([]string{"*"}) //@TODO: change to frontends host url
-	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "POST"})
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(":"+port, handlers.CORS(headersOk, originsOk, methodsOk)(r)))
