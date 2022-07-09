@@ -31,7 +31,7 @@ func main() {
 	r.HandleFunc("/ping", controller.Ping).Methods("GET")
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOk := handlers.AllowedOrigins([]string{"http://localhost:3000"}) //@TODO: change to frontends host url
+	originsOk := handlers.AllowedOrigins([]string{"https://quoteshare.vercel.app"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST"})
 
 	http.Handle("/", r)
