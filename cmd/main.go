@@ -31,11 +31,11 @@ func main() {
 	r.HandleFunc("/ping", controller.Ping).Methods("GET")
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOk := handlers.AllowedOrigins([]string{"*"}) //@TODO: change to frontends host url
+	originsOk := handlers.AllowedOrigins([]string{"http://localhost:3000"}) //@TODO: change to frontends host url
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST"})
 
 	http.Handle("/", r)
-	log.Fatal(http.ListenAndServe(":"+port, handlers.CORS(headersOk, originsOk, methodsOk)(r)))
+	log.Fatal(http.ListenAndServe(":"+port, handlers.CORS(headersOk, originsOk, methodsOk, handlers.AllowCredentials())(r)))
 }
 
 func setSecretToken() {
