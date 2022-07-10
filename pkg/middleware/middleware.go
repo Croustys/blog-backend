@@ -18,7 +18,7 @@ func contains(s []string, str string) bool {
 	return false
 }
 
-var allowedSlugs []string = []string{"/login", "/register", "/ping"}
+var allowedSlugs []string = []string{"/login", "/register", "/ping", "/posts"}
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
