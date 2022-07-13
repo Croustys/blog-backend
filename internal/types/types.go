@@ -19,3 +19,8 @@ type PostResponse struct {
 	Title    string             `json:"title"`
 	Content  string             `json:"content"`
 }
+type GetUser struct {
+	Username string         `json:"username"`
+	Email    string         `json:"email"`
+	Posts    []PostResponse `json:"posts"`
+}
