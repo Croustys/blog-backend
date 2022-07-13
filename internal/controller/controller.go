@@ -163,6 +163,19 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(json)
 }
+func GetUserPosts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	username := mux.Vars(r)["username"]
+	data := db.GetPostsByUsername(username)
+	json, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(json)
+}
 
 func Ping(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Pong"))
