@@ -84,6 +84,15 @@ func GetPayload(r *http.Request) (string, string) {
 	return claims.Email, claims.Username
 }
 
+func RemoveToken(w http.ResponseWriter, r *http.Request) {
+	currentCookie, err := r.Cookie("AuthToken")
+	if err != nil {
+		log.Println(err)
+	}
+	currentCookie.MaxAge = -1
+	http.SetCookie(w, currentCookie)
+}
+
 func setSecretToken() {
 	secret_token = os.Getenv("JWT_TOKEN")
 }

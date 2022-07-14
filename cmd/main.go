@@ -31,6 +31,7 @@ func main() {
 	r.HandleFunc("/ping", controller.Ping).Methods("GET")
 	r.HandleFunc("/user/{username}", controller.GetUserPosts).Methods("GET")
 	r.HandleFunc("/user", controller.GetUser).Methods("GET")
+	r.HandleFunc("/logout", controller.Logout).Methods("POST")
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
 	originsOk := handlers.AllowedOrigins([]string{"http://localhost:3000"}) //@TODO: change to frontends host url
