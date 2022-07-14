@@ -9,15 +9,18 @@ For development purposes place `.env` file in `root` folder
 `POST`
 
 - `/login`
+- `/logout`
 - `/register`
 - `/create` - post creation
 
 `GET`
 
 - `/user/{id}`
-- `/posts?offset={1}&limit={1}` --optional parameters for lazy loading
+- `/user` -- returns the authenticated user's `username`, `email`
+- `/posts?offset={1}&limit={1}` -- optional parameters for lazy loading
 - `/posts` -- all posts
 - `/post/{id}` -- specific post
+- `/ping` -- just to see if the server is running properly
 
 ## Technologies used
 
