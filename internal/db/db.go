@@ -98,6 +98,11 @@ func SavePost(authorEmail string, authorUsername string, title string, content s
 }
 func GetPosts(offset int64, limit int64) []types.PostResponse {
 	client := connect()
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
 
 	opts := options.Find()
 	opts.SetSkip(offset)
@@ -118,6 +123,11 @@ func GetPosts(offset int64, limit int64) []types.PostResponse {
 }
 func GetPost(id string) types.PostResponse {
 	client := connect()
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
 
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -136,4 +146,28 @@ func GetPost(id string) types.PostResponse {
 	cursor.Decode(&result)
 
 	return result
+}
+func GetPostsByUsername(username string) []types.PostResponse {
+	client := connect()
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
+
+	filter := bson.D{primitive.E{Key: "username", Value: username}}
+	coll := client.Database("blog").Collection("posts")
+	opts := options.Find()
+
+	cursor, err := coll.Find(context.TODO(), filter, opts)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var results []types.PostResponse
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		log.Println(err)
+	}
+
+	return results
 }

@@ -29,6 +29,8 @@ func main() {
 	r.HandleFunc("/posts", controller.GetPosts).Methods("GET")
 	r.HandleFunc("/post/{id}", controller.GetPost).Methods("GET")
 	r.HandleFunc("/ping", controller.Ping).Methods("GET")
+	r.HandleFunc("/user/{username}", controller.GetUserPosts).Methods("GET")
+	r.HandleFunc("/user", controller.GetUser).Methods("GET")
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
 	originsOk := handlers.AllowedOrigins([]string{"https://quoteshare.vercel.app"})
