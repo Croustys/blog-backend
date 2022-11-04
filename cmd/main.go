@@ -33,7 +33,7 @@ func main() {
 	r.HandleFunc("/user", controller.GetUser).Methods("GET")
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOk := handlers.AllowedOrigins([]string{"https://quoteshare.vercel.app"})
+	originsOk := handlers.AllowedOrigins([]string{"https://quoteshare.vercel.app", "https://blog.barabasakos.hu"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST"})
 
 	http.Handle("/", r)
