@@ -65,3 +65,5 @@ fetch("api.domain.com/create", {
   body: JSON.stringify({ title, content }),
 });
 ```
+
+# Hosted on Oracle
